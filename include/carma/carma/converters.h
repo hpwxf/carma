@@ -101,7 +101,6 @@ arma::Mat<T> arr_to_mat(py::array_t<T>&& src) {
 template <typename T>
 arma::Mat<T> arr_to_mat(py::array_t<T>& src, bool copy = false, bool strict = false) {
     py::buffer_info info = src.request();
-    T* data = p_validate_from_array_mat<T>(info);
 #ifndef CARMA_DONT_REQUIRE_F_CONTIGUOUS
     // determine ordering, if c-contiguous memory we are going to copy below
     if (is_c_contiguous_2d(src) || requires_copy(src) || copy) {
@@ -109,10 +108,12 @@ arma::Mat<T> arr_to_mat(py::array_t<T>& src, bool copy = false, bool strict = fa
     if (requires_copy(src) || copy) {
 #endif
         // copy and ensure fortran order
-        data = steal_copy_array<T>(src.ptr());
+        T * data = steal_copy_array<T>(src.ptr());
         return p_arr_to_mat(info, data, true, strict);
+    } else {
+        T * data = p_validate_from_array_mat<T>(info);
+        return p_arr_to_mat(info, data, false, strict);
     }
-    return p_arr_to_mat(info, data, false, strict);
 } /* arr_to_mat */
 
 

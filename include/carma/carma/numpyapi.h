@@ -58,6 +58,7 @@ struct npy_api {
 
  private:
     enum functions {
+        // ids from from numpy/__multiarray_api.h
         API_PyArray_NewCopy = 85,
         API_PyArray_Free = 165,
         API_PyDataMem_NEW = 288,
